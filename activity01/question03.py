@@ -1,48 +1,34 @@
 from libs.myurllib import get_parsed, session, Moment, easy_get_text
 
 soup = get_parsed('https://www.climatempo.com.br/previsao-do-tempo/cidade/264/teresina-pi')
-#
-
-temperatura_momento = soup.find('p',class_='left normal txt-gray-cw temp-topo').get_text()
-condicao_momento = soup.find('p', id='momento-condicao').get_text()
-momento_sensacao = soup.find('li', id='momento-sensacao').get_text()
-momento_humidade = soup.find('li', id='momento-humidade').get_text()
-momento_pressao = soup.find('li', id='momento-pressao').get_text()
-momento_vento = soup.find('a', id='momento-vento').get_text().replace(' ','').replace('\n','').replace('\xa0','')
-atualizacao = soup.find('p', id='momento-atualizacao').get_text().replace('\n','').replace(' ','').replace('Atualizadoàs','')
 
 #
 
-m = Moment(temperatura_momento, condicao_momento, momento_sensacao, momento_humidade, momento_pressao, momento_vento, atualizacao)
+temperature = easy_get_text(soup, 'p','left normal txt-gray-cw temp-topo', True)
+condition = easy_get_text(soup, 'p', 'momento-condicao')
+sensation = easy_get_text(soup, 'li', 'momento-sensacao')
+humidity = easy_get_text(soup, 'li', 'momento-humidade')
+pressure = easy_get_text(soup, 'li', 'momento-pressao')
+wind = easy_get_text(soup, 'a', 'momento-vento').replace(' ','').replace('\n','').replace('\xa0','')
+update = easy_get_text(soup, 'p', 'momento-atualizacao').replace('\n','').replace(' ','').replace('Atualizadoàs','')
 
-m.save()
+# 
 
-# estrutura = {
-#     'temperatura_momento':temperatura_momento,
-#     'condicao_momento':condicao_momento,
-#     'momento_sensacao':momento_sensacao,
-#     'momento_humidade':momento_humidade,
-#     'momento_pressao':momento_pressao,
-#     'momento_vento':momento_vento,
-#     'atualizacao':atualizacao
-# }
+m = Moment(temperature, condition, sensation, humidity, pressure, wind, update)
 
-#(estrutura)
+has_same = len(session.query(Moment)
+    .filter(Moment.update == m.update)
+    .limit(5).all())
 
-#dados = get_data()
+if has_same == 0:
 
-#print('                        dados de temperatura                            ')
-#print(' horario | temperatura | sensacao | umidade | pressao | vento | condicao')
-#print('------------------------------------------------------------------------')
+    session.add(m)
 
-#print(dados)
+    session.commit()
 
-# for dado in dados:
-# 	print(" %s%s| %s%s| %s%s | %s%s | %s%s | %s%s | %s "%(
-# 		dado['atualizacao'], (8-len(dado['atualizacao']))*' ',
-# 		dado['temperatura_momento'], (12-len(dado['temperatura_momento']))*' ',
-# 		dado['momento_sensacao'], (8-len(dado['momento_sensacao']))*' ',
-# 		dado['momento_humidade'], (7-len(dado['momento_humidade']))*' ',
-# 		dado['momento_pressao'], (7-len(dado['momento_pressao']))*' ',
-# 		dado['momento_vento'], (5-len(dado['momento_vento']))*' ',
-# 		dado['condicao_momento']))
+session.close()
+
+datas = session.query(Moment).all()
+
+for data in datas:
+    print(data)

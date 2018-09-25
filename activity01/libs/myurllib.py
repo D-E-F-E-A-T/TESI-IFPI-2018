@@ -5,15 +5,9 @@ from sqlalchemy.orm import sessionmaker, relationship
 import requests
 
 # create an engine
-engine = create_engine('sqlite:///banco.db')
-
-# create a configured "Session" class
-Session = sessionmaker(bind=engine)
+engine = create_engine('sqlite:///mydb.db')
 
 Base = declarative_base()
-
-# create a Session
-session = Session()
 
 class Moment(Base):
     __tablename__ = 'moments'
@@ -36,8 +30,21 @@ class Moment(Base):
         self.wind = wind
         self.update = update
 
-def download(url, num_retries=2):
-    print('Downloading data from:', url)
+    def __str__(self):
+        return 'Temperatura de tereina: %s, em: %s' % (self.temperature, self.update)
+
+Base.metadata.create_all(engine)
+
+# create a configured "Session" class
+Session = sessionmaker(bind=engine)
+
+# create a Session
+session = Session()
+
+def download(url, num_retries=2, quiet = False):
+    
+    if not quiet:
+        print('Downloading data from:', url)
     page = None
     try:
         response = requests.get(url)
@@ -50,8 +57,8 @@ def download(url, num_retries=2):
         print('Download error:', e.reason)
     return page
 
-def get_parsed(url, num_retries=2):
-    soup = bs(download(url, num_retries), 'html.parser')
+def get_parsed(url, num_retries=2, quiet = False):
+    soup = bs(download(url, num_retries, quiet), 'html.parser')
     return soup
 
 def easy_get_text(soup, str, id, is_class = False):
