@@ -1,6 +1,4 @@
 import requests
-#from bs4 import BeautifulSoup as bs
-#from operator import itemgetter
 
 def download(url, num_retries=2):
     print('Downloading data from:', url)
@@ -15,9 +13,6 @@ def download(url, num_retries=2):
     except requests.exceptions.RequestException as e:
         print('Download error:', e.reason)
     return page
-
-def main():
-    pass
 
 if __name__ == '__main__':
     a = download('http://www.google.com')
