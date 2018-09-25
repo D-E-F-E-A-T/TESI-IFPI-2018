@@ -1,4 +1,5 @@
 import requests
+from bs4 import BeautifulSoup as bs
 
 def download(url, num_retries=2):
     print('Downloading data from:', url)
@@ -13,6 +14,10 @@ def download(url, num_retries=2):
     except requests.exceptions.RequestException as e:
         print('Download error:', e.reason)
     return page
+
+def get_parsed(url, num_retries=2):
+    soup = bs(download(url, num_retries), 'html.parser')
+    return soup
 
 if __name__ == '__main__':
     a = download('http://www.google.com')

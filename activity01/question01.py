@@ -1,9 +1,7 @@
-import libs.myurllib as u
-from bs4 import BeautifulSoup as bs
+from libs.myurllib import get_parsed
 from operator import itemgetter
 
-html = download('https://www.rottentomatoes.com/')
-soup = bs(html, 'html.parser')
+soup = get_parsed('https://www.rottentomatoes.com/')
 
 movies_div = soup.find('div', id='homepage-opening-this-week')
 scores = [int(score.get_text().strip("%")) for score in movies_div.find_all('span', class_='tMeterScore')]
