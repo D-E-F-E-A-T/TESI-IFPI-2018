@@ -1,6 +1,7 @@
 from libs.myurllib import get_parsed, session, Moment, easy_get_text
 
 soup = get_parsed('https://www.climatempo.com.br/previsao-do-tempo/cidade/264/teresina-pi')
+#
 
 temperatura_momento = soup.find('p',class_='left normal txt-gray-cw temp-topo').get_text()
 condicao_momento = soup.find('p', id='momento-condicao').get_text()
@@ -10,7 +11,11 @@ momento_pressao = soup.find('li', id='momento-pressao').get_text()
 momento_vento = soup.find('a', id='momento-vento').get_text().replace(' ','').replace('\n','').replace('\xa0','')
 atualizacao = soup.find('p', id='momento-atualizacao').get_text().replace('\n','').replace(' ','').replace('Atualizadoàs','')
 
+#
 
+m = Moment(temperatura_momento, condicao_momento, momento_sensacao, momento_humidade, momento_pressao, momento_vento, atualizacao)
+
+m.save()
 
 # estrutura = {
 #     'temperatura_momento':temperatura_momento,
